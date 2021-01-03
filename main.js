@@ -7,7 +7,7 @@ const bodyParser = require("body-parser");
 const bootstrap = require("./src/bootstrap");
 
 const tempDir = path.resolve("tmp");
-const port = process.env.port || 3000;
+const port = process.env.PORT || 3000;
 
 const app = express();
 
