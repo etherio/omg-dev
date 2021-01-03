@@ -1,0 +1,11 @@
+name: Server Health Monitor
+on:
+  schedule:
+  - cron: '0,15,30,45 * * * *'
+
+jobs:
+  status:
+    runs-on: ubuntu-latest
+    steps:
+    - run: curl -L https://omg-node-server.herokuapp.com/status
+
