@@ -1,6 +1,5 @@
 const api = {
-  NETLIFY_SERVER: "http://localhost:8000",
-  HEROKU_SERVER: "http://localhost:3000",
+  HEROKU_SERVER: "https://afternoon-lake-52643.herokuapp.com",
 };
 
 const firebaseConfig = {
