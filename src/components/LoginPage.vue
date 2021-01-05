@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import { auth } from "firebase";
+import firebase from "firebase/app";
 
 export default {
   data: () => ({
@@ -105,10 +105,10 @@ export default {
       this.loading = true;
       this.error = null;
 
-      auth()
+      firebase.auth()
         .signInWithEmailAndPassword(this.email, this.password)
         .then(() => {
-          this.loading = true;
+          this.loading = false;
         })
         .catch((err) => {
           this.loading = false;
@@ -129,7 +129,7 @@ export default {
       this.loading = true;
       this.error = null;
 
-      auth().signInWithRedirect(provider);
+      firebase.auth().signInWithRedirect(provider);
     },
     signInWithFacebook() {
       const provider = new auth.FacebookAuthProvider();
@@ -137,7 +137,7 @@ export default {
       this.error = null;
       provider.addScope("public_profile, email, pages_read_engagement");
 
-      auth().signInWithRedirect(provider);
+      firebase.auth().signInWithRedirect(provider);
     },
   },
   beforeMount() {
