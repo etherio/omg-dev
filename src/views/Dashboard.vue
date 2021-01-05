@@ -1,10 +1,7 @@
 <script>
 import { database } from "../firebase";
 import { translateNumber } from "../app/burmese";
-import axios from "axios";
-import server from "@/app/server";
-
-const zero = "၀";
+import server from "../app/server";
 
 export default {
   data: () => ({
@@ -17,16 +14,19 @@ export default {
     num: translateNumber,
   },
 
-  async created() {
-    this.products = zero;
-    this.categories = zero;
-    this.inventory = zero;
+  async beforeMount() {
+    this.products = 0;
+    this.categories = 0;
+    this.inventory = 0;
     try {
-      const { data } = await this.axios(server.metadata);
+      const { data } = await this.axios.get(server.metadata, {
+        headers: {
+          'X-Access-Token': this.$root.user.token
+        },
+      });
       this.products = data.products;
       this.categories = data.categories;
       this.inventory = data.inventory;
-      console.log(data);
     } catch (e) {
       console.error(e);
     }
@@ -36,7 +36,7 @@ export default {
 
 <template>
   <v-container>
-    <h2>မင်္ဂလာပါ‌</h2>
+    <h2 class="text-center mt-3 mb-3">မင်္ဂလာပါ‌</h2>
     <v-row>
       <v-col cols="12" sm="6" md="6" lg="4" xl="4">
         <v-card color="blue darken-2" dark :to="{ path: '/products' }">
