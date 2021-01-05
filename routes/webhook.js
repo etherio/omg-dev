@@ -2,12 +2,12 @@ const { Router } = require("express");
 
 const router = Router();
 const token = process.env.APP_TOKEN || "secret-token";
+const payloads = [];
 
 router.get("/", (req, res) => {
   const mode = req.query["hub.mode"];
   const verfy_token = req.query["hub.verify_token"];
   const challenge = req.query["hub.challenge"];
-
   if (mode === "subscribe" && verfy_token === token) {
     res.send(challenge).end();
   } else {
@@ -17,10 +17,16 @@ router.get("/", (req, res) => {
 
 router.post("/", (req, res) => {
   if (!req.isXHubValid()) {
-    res.sendStatus(401);
+    res.status(401);
     return;
   }
-  console.log("Facebook request body:", req.body);
+  let payload = { payload: req.body, timestamp: Date.now() };
+  payloads.push(payload);
+  res.status(200).end();
+});
+
+router.get("/payloads", (req, res) => {
+  res.json({ data: payloads.reverse() }).end();
 });
 
 module.exports = router;
