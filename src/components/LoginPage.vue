@@ -101,10 +101,8 @@ export default {
   methods: {
     signInWithEmailAndPassword() {
       if (!this.$refs.form.validate()) return;
-
       this.loading = true;
       this.error = null;
-
       firebase.auth()
         .signInWithEmailAndPassword(this.email, this.password)
         .then(() => {
@@ -125,18 +123,16 @@ export default {
         });
     },
     signInWithGoogle() {
-      const provider = new auth.GoogleAuthProvider();
+      const provider = new firebase.auth.GoogleAuthProvider();
       this.loading = true;
       this.error = null;
-
       firebase.auth().signInWithRedirect(provider);
     },
     signInWithFacebook() {
-      const provider = new auth.FacebookAuthProvider();
+      const provider = new firebase.auth.FacebookAuthProvider();
       this.loading = true;
       this.error = null;
       provider.addScope("public_profile, email, pages_read_engagement");
-
       firebase.auth().signInWithRedirect(provider);
     },
   },
@@ -146,4 +142,3 @@ export default {
 };
 </script>
 
-<style></style>
