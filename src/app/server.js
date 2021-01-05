@@ -42,6 +42,10 @@ export default {
       .then(({ data }) => data);
   },
 
+  get metadata() {
+    return `${api.HEROKU_SERVER}/metadata`;
+  },
+
   get products() {
     return `${api.HEROKU_SERVER}/products`;
   },

@@ -1,5 +1,4 @@
 <script>
-import axios from "axios";
 import server from "../app/server";
 import ProductCreate from "../components/ProductCreate.vue";
 import { databaseName, database, storage } from "../firebase";
@@ -28,7 +27,7 @@ export default {
     },
 
     age(value) {
-      return translateAge(parseInt(value).toLocaleString());
+      return translateAge(parseInt(value));
     },
 
     viewProduct(id) {
@@ -36,9 +35,9 @@ export default {
     },
   },
 
-  created() {
-    axios
-      .get(server.listProducts, {
+  beforeMount() {
+    this.axios
+      .get(server.products, {
         headers: { "X-Access-Token": this.$root.user.token },
       })
       .then(({ data }) => {
@@ -46,12 +45,7 @@ export default {
         this.products = data.map((product) => {
           product.photoURL = placeholder;
           if (product.images && product.images.length) {
-            storage
-              .child(product.images[0])
-              .getDownloadURL()
-              .then((url) => {
-                product.photoURL = url;
-              });
+            product.photoURL = product.images[0];
           }
           return product;
         });
@@ -81,7 +75,7 @@ export default {
       <v-card-actions>
         <v-card-title>ကုန်ပစ္စည်းများ</v-card-title>
         <v-spacer />
-        <v-btn text to="/products/new">
+        <v-btn text :to="{ path: '/products/new' }">
           <v-icon>mdi-plus</v-icon>
           အသစ်ထည့်ရန်
         </v-btn>

@@ -3,7 +3,6 @@ import Product from "../app/Product";
 import server from "../app/server";
 import { database, storage, ServerValue } from "../firebase";
 import { translateAge } from "../app/burmese";
-import axios from "axios";
 import FormData from "form-data";
 
 const productsRef = database.child("products");
@@ -16,10 +15,10 @@ const optimizeImage = async (code, file) => {
   let data = new FormData();
   data.append("code", code);
   data.append("image", file, file.fileName);
-  let response = await axios({
+  let response = await this.axios({
     data,
     method: "POST",
-    url: server.optimizeImage,
+    url: "https://api.etherio.net/image",
     headers: {
       "Content-Type": `multipart/form-data; boundary=${data._boundary}`,
     },
@@ -133,7 +132,7 @@ export default {
     },
   },
 
-  async created() {
+  async beforeMount() {
     let colors = await colorsRef.get();
     let categories = await categoriesRef.get();
 
@@ -157,9 +156,6 @@ export default {
         });
       });
     }
-
-    /* preloading to server */
-    server.preload();
   },
 };
 </script>

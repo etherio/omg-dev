@@ -3,7 +3,7 @@
     <slot></slot>
 
     <v-toolbar-title>
-      <a href="/#/">
+      <router-link :to="{ path: '/' }">
         <v-img
           id="logo"
           alt="OMG"
@@ -13,7 +13,8 @@
           :lazy-src="logo"
           transition="scale-transition"
           width="80"
-      /></a>
+        />
+      </router-link>
     </v-toolbar-title>
 
     <v-spacer></v-spacer>

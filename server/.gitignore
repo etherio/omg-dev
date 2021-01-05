@@ -1,8 +1,0 @@
-*.log*
-.DS_Store
-
-.cached
-
-.env
-
-node_modules/

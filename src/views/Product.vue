@@ -48,27 +48,18 @@ export default {
 
   beforeMount() {
     let id = this.$route.params.id;
-    axios
+    this.axios
       .get(`${server.products}/${id}`, {
         headers: {
           "X-Access-Token": this.$root.user.token,
         },
       })
       .then(({ data }) => {
-        console.log(data);
         for (let key in data) {
           this[key] = data[key];
-        }
-        console.log(data);
-        if (data.images.length) {
-          storage
-            .child(this.images[0])
-            .getDownloadURL()
-            .then((url) => {
-              this.photoURL = url;
-            });
-        } else {
-          this.photoURL = placeholderLight;
+          if (key === "images") {
+            this.photoURL = data[key][0];
+          }
         }
       })
       .catch((err) => {
@@ -103,14 +94,9 @@ export default {
   <v-container>
     <v-card :loading="loading">
       <v-card-title>
-        <a
-          :href="$router.resolve({ path: '/products' }).href"
-          class="text-decoration-none"
-        >
-          <v-btn icon class="mr-2">
-            <v-icon>mdi-arrow-left</v-icon>
-          </v-btn>
-        </a>
+        <v-btn icon class="mr-2" @click="$router.back()">
+          <v-icon>mdi-arrow-left</v-icon>
+        </v-btn>
         <span v-if="name">
           {{ name }}
           <v-chip v-if="code" color="secondary" class="mx-1" small>
