@@ -1,6 +1,6 @@
-const { database, auth } = require("firebase-admin");
-const databaseName = process.env.DATABASE_NAME;
-const admin = require("firebase-admin");
+const { database, auth, storage } = require("firebase-admin");
+const databaseName = process.env.FIREBASE_DATABASE_NAME;
+// const storageBucket = process.env.FIREBASE_STORAGE_BUCKET;
 
 class Product {
   constructor({
@@ -23,7 +23,7 @@ class Product {
     this.price = parseInt(price);
     this.createdAt = parseInt(createdAt);
     this.uid = uid;
-    this.images = images;
+    this.images = Object.values(images || {});
     this.colors = colors;
     this.category = category;
     this.description = description;
@@ -31,9 +31,26 @@ class Product {
     this.maxAge = maxAge && parseFloat(maxAge);
   }
 
-  async fetch({ owner, stocks }) {
+  async fetch({ owner, stocks, imageUrl }) {
     owner && (await this.getOwner());
     stocks && (await this.getStocks());
+    imageUrl && (await this.getImageUrl());
+  }
+
+  async getImageUrl() {
+    let images = [];
+    if (!this.images instanceof Array) {
+      return;
+    }
+    for (let image of this.images) {
+      image = `databases/${databaseName}/${image}`;
+      if (storage().bucket().exists(image)) {
+        let snapshot = await storage().bucket().file(image).get();
+        snapshot[0].makePublic();
+        images.push(snapshot[0].publicUrl());
+      }
+    }
+    this.images = images;
   }
 
   getOwner() {

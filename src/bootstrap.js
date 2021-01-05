@@ -9,10 +9,12 @@ if (process.env.NODE_ENV === "development") {
 
 async function initializeApp() {
   if (app) return app;
-  const url = `${process.env.GOOGLE_CLOUD_CREDENTIAL}?alt=media&token=${process.env.FIREBASE_STORAGE_TOKEN}`;
-  const { data } = await axios.get(url);
+  const url = new URL(process.env.GOOGLE_CLOUD_CREDENTIAL);
+  url.searchParams.append("alt", "media");
+  url.searchParams.append("token", process.env.FIREBASE_STORAGE_TOKEN);
+  const { data: serviceAccount } = await axios.get(url.toString());
   app = admin.initializeApp({
-    credential: admin.credential.cert(data),
+    credential: admin.credential.cert(serviceAccount),
     storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
     databaseURL: process.env.FIREBASE_DATABASE_URL,
   });

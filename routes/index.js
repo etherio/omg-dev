@@ -16,6 +16,7 @@ router.use((req, res, next) => {
 
 router.use("/products", require("./products"));
 router.use("/users", require("./users"));
+router.use("/metadata", require("./metadata"));
 
 router.all("/status", (req, res) => {
   const status = {
@@ -33,8 +34,8 @@ router.all("/status", (req, res) => {
 });
 
 router.use((req, res) => {
-  res.status(404);
-  res.json({ error: "request not found" });
+  res.status(404).json({ error: "request not found" }).end();
+  console.log("[404]", req.path);
 });
 
 module.exports = router;
