@@ -3,9 +3,7 @@ const admin = require("firebase-admin");
 
 let app;
 
-if (process.env.NODE_ENV === "development") {
-  require("dotenv").config();
-}
+require("dotenv").config();
 
 async function initializeApp() {
   if (app) return app;

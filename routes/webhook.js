@@ -3,6 +3,14 @@ const { Router } = require("express");
 const router = Router();
 const token = process.env.APP_TOKEN || "secret-token";
 const payloads = [];
+const xhub = require("express-x-hub");
+
+router.use(
+  xhub({
+    algorithm: "sha1",
+    secret: process.env.APP_SECRET,
+  })
+);
 
 router.get("/", (req, res) => {
   const mode = req.query["hub.mode"];
@@ -20,13 +28,20 @@ router.post("/", (req, res) => {
     res.status(401);
     return;
   }
-  let payload = { payload: req.body, timestamp: Date.now() };
+  let payload = {
+    payload: req.body,
+    timestamp: Date.now(),
+  };
   payloads.push(payload);
   res.status(200).end();
 });
 
 router.get("/payloads", (req, res) => {
-  res.json({ data: payloads.reverse() }).end();
+  res
+    .json({
+      data: payloads.reverse(),
+    })
+    .end();
 });
 
 module.exports = router;
