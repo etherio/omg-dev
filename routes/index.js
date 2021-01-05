@@ -17,6 +17,7 @@ router.use((req, res, next) => {
 router.use("/products", require("./products"));
 router.use("/users", require("./users"));
 router.use("/metadata", require("./metadata"));
+router.use("/webhook", require("./webhook"));
 
 router.all("/status", (req, res) => {
   const status = {
