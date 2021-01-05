@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import { auth } from "../firebase";
+import { auth } from "firebase";
 
 export default {
   data: () => ({
@@ -104,6 +104,7 @@ export default {
 
       this.loading = true;
       this.error = null;
+
       auth()
         .signInWithEmailAndPassword(this.email, this.password)
         .then(() => {
@@ -127,17 +128,16 @@ export default {
       const provider = new auth.GoogleAuthProvider();
       this.loading = true;
       this.error = null;
-      auth()
-        .signInWithRedirect(provider)
-        .then(() => (this.loading = false));
+
+      auth().signInWithRedirect(provider);
     },
     signInWithFacebook() {
       const provider = new auth.FacebookAuthProvider();
       this.loading = true;
       this.error = null;
-      auth()
-        .signInWithRedirect(provider)
-        .then(() => (this.loading = false));
+      provider.addScope("public_profile, email, pages_read_engagement");
+
+      auth().signInWithRedirect(provider);
     },
   },
   beforeMount() {
