@@ -1,6 +1,6 @@
 # omg
 
-[![Vue@2](https://github.com/etherio/omg/workflows/Vue@2/badge.svg)](https://github.com/etherio/omg/actions)
+![Deploy to Firebase Web Hosting](https://github.com/etherio/omg-dev/workflows/Deploy%20to%20Firebase%20Web%20Hosting/badge.svg)
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/4a1fea98-6608-4e58-a29b-ebf2f2d7910b/deploy-status)](https://app.netlify.com/sites/serene-galileo-f84e05/deploys)
 
