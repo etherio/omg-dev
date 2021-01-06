@@ -1,11 +1,8 @@
 import { firebaseConfig } from "../config";
 import firebase from "firebase/app";
-import "firebase/analytics";
 import "firebase/auth";
 import "firebase/database";
 import "firebase/firestore";
-import "firebase/messaging";
-import "firebase/performance";
 import "firebase/storage";
 
 export const databaseName = "ctkesqmPHGJHW95gMvnL";

@@ -1,16 +1,16 @@
 <script>
 import axios from "axios";
-import server from "../app/server";
-import Product from "../app/Product";
-import placeholder from "../assets/img/image-dark.png";
-import placeholderLight from "../assets/img/image.png";
-import { database, databaseName, ServerValue, storage } from "../firebase";
+import server from "@/app/server";
+import Product from "@/app/Product";
+import placeholder from "@/assets/img/image-dark.png";
+import placeholderLight from "@/assets/img/image.png";
+import { database, databaseName, ServerValue, storage } from "@/firebase";
 import {
   translateAge,
   translateDateTime,
   translateNumber,
-} from "../app/burmese";
-import DeleteProductModal from "../components/DeleteProductModal.vue";
+} from "@/app/burmese";
+import DeleteProductModal from "@/components/DeleteProductModal.vue";
 
 export default {
   components: {
@@ -40,8 +40,15 @@ export default {
     async deleteProduct() {
       if (this.loading) return;
       this.loading = true;
-      this.dialog = true;
-      await Product.delete(this);
+      const { status, statusText } = await this.axios.delete(
+        `${server.products}/${this.$route.params.id}`,
+        {
+          headers: {
+            "X-Access-Token": this.$root.user.token,
+          },
+        }
+      );
+
       this.$router.push({ path: "/products" });
     },
   },

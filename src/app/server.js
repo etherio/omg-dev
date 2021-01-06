@@ -74,4 +74,10 @@ export default {
   get status() {
     return `${api.HEROKU_SERVER}/status`;
   },
+  get session() {
+    return `${api.HEROKU_SERVER}/session`;
+  },
+  get combo() {
+    return `${api.HEROKU_SERVER}/metadata/combo`;
+  },
 };

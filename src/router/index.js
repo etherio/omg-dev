@@ -7,42 +7,47 @@ const routes = [
   {
     path: "/",
     name: "Dashboard",
-    component: () => import("../views/Dashboard.vue"),
+    component: () => import("@/views/Dashboard.vue"),
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: () => import("@/views/login.vue"),
   },
   {
     path: "/users",
     name: "Users",
-    component: () => import("../views/Users.vue"),
+    component: () => import("@/views/Users.vue"),
   },
   {
     path: "/profile",
     name: "Profile",
-    component: () => import("../views/Profile.vue"),
+    component: () => import("@/views/Profile.vue"),
   },
   {
     path: "/products",
     name: "Products",
-    component: () => import("../views/Products.vue"),
+    component: () => import("@/views/products/index.vue"),
   },
   {
     path: "/products/new",
     name: "Create new product",
-    component: () => import("../components/ProductCreate.vue"),
+    component: () => import("@/views/products/create.vue"),
   },
   {
     path: "/products/:id/clone",
     name: "Clone Product",
-    component: () => import("../components/ProductDuplicate.vue"),
+    component: () => import("@/components/ProductDuplicate.vue"),
   },
   {
     path: "/products/:id",
     name: "Product",
-    component: () => import("../views/Product.vue"),
+    component: () => import("@/views/products/product.vue"),
   },
   {
     path: "/categories",
     name: "Categories",
-    component: () => import("../views/Categories.vue"),
+    component: () => import("@/views/Categories.vue"),
   },
 ];
 

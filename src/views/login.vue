@@ -3,7 +3,12 @@
     <v-row align="center" justify="center">
       <v-col cols="12" sm="8">
         <v-card :loading="loading" class="px-2" elevation="4">
-          <v-form ref="form" v-model="valid" lazy-validation>
+          <v-form
+            ref="form"
+            v-model="valid"
+            lazy-validation
+            @submit.prevent="signInWithEmailAndPassword"
+          >
             <v-card-title class="pt-6 pb-5">
               <span class="text-center" style="width: 100%;">
                 လက်မှတ်ထိုးဝင်ပါ
@@ -131,7 +136,9 @@ export default {
     },
   },
   beforeMount() {
-    this.$root.overlay(false);
+    if (this.$root.user) {
+      this.$router.push({ path: "/" });
+    }
   },
 };
 </script>

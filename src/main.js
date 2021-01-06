@@ -6,6 +6,7 @@ import axios from "axios";
 import VueAxios from "vue-axios";
 import User from "./app/User";
 import { app, auth } from "./firebase";
+import server from "./app/server";
 
 const data = {
   loaded: false,
@@ -16,21 +17,30 @@ const data = {
 Vue.use(VueAxios, axios);
 Vue.config.productionTip = true;
 
-auth().onAuthStateChanged((user) => {
-  User.resolve(user).then(async (user) => {
-    data.user = user;
-    data.loaded = true;
+auth()
+  .getRedirectResult()
+  .then((result) => {
+    if (result && result.credential) {
+      // const { credential } = result;
+      axios.post(server.session, result);
+    }
   });
-});
-
-if (process.env.NODE_ENV === "production") {
-  app.analytics();
-  app.performance();
-}
 
 new Vue({
   data,
   router,
   vuetify,
-  render: (h) => h(App),
+  render(h) {
+    auth().onAuthStateChanged((user) => {
+      User.resolve(user).then(async (user) => {
+        data.user = user;
+        data.loaded = true;
+        if (!user && this.$route.path !== "/login") {
+          this.$router.push({ path: "/login" });
+        }
+      });
+    });
+
+    return h(App);
+  },
 }).$mount("#app");

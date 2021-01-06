@@ -28,11 +28,10 @@
 
     <!-- contents -->
     <v-main>
-      <v-container v-if="$root.user">
-        <router-view v-if="$root.user.role" />
-        <access-denied v-else />
+      <v-container>
+        <router-view />
+        <!-- <access-denied /> -->
       </v-container>
-      <login-page v-else />
     </v-main>
 
     <!-- footer -->
@@ -76,7 +75,7 @@ export default {
         icon: "mdi-account-multiple",
         title: "အဆက်အသွယ်များ",
         path: "/customers",
-        visible: ["admin", "moderator"],
+        visible: [],
       },
       {
         icon: "mdi-store",
@@ -88,13 +87,13 @@ export default {
         icon: "mdi-tag",
         title: "အမျိူးအစားများ",
         path: "/categories",
-        visible: ["admin", "moderator"],
+        visible: [],
       },
       {
         icon: "mdi-truck",
         title: "အော်ဒါများ",
         path: "/orders",
-        visible: ["admin", "moderator"],
+        visible: [],
       },
       {
         icon: "mdi-security",
@@ -106,14 +105,13 @@ export default {
         icon: " mdi-receipt",
         title: "မှတ်တမ်းများ",
         path: "/logs",
-        visible: ["admin"],
+        visible: [],
       },
     ],
   }),
 
   components: {
     NavBar,
-    LoginPage,
     AccessDenied,
   },
 

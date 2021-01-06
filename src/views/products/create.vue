@@ -1,36 +1,13 @@
 <script>
-import Product from "../app/Product";
-import server from "../app/server";
-import { database, storage, ServerValue } from "../firebase";
-import { translateAge } from "../app/burmese";
+import server from "@/app/server";
+import { translateAge } from "@/app/burmese";
 import FormData from "form-data";
-
-const productsRef = database.child("products");
-const inventoryRef = database.child("inventory");
-const categoriesRef = database.child("categories");
-const metadataRef = database.child("metadata/collection");
-const colorsRef = database.child("colors");
-
-const optimizeImage = async (code, file) => {
-  let data = new FormData();
-  data.append("code", code);
-  data.append("image", file, file.fileName);
-  let response = await this.axios({
-    data,
-    method: "POST",
-    url: "https://api.etherio.net/image",
-    headers: {
-      "Content-Type": `multipart/form-data; boundary=${data._boundary}`,
-    },
-    responseType: "blob",
-  });
-  return response.data;
-};
 
 export default {
   name: "product-create",
   data: () => ({
     loading: false,
+    connecting: false,
     select: {
       name: null,
       code: null,
@@ -56,6 +33,7 @@ export default {
         return this.goToRequiredField();
       }
       this.loading = true;
+      const data = new FormData();
       let product = {
         name: this.select.name,
         code: this.select.code,
@@ -63,27 +41,29 @@ export default {
         description: this.select.description,
         category: this.select.category,
         colors: this.select.colors.filter((c) => !!c),
-        images: [],
         minAge: this.select.ageGroup[0],
         maxAge: this.select.ageGroup[1],
-        uid: this.$root.user.uid,
-        createdAt: ServerValue.TIMESTAMP,
       };
       if (this.select.image) {
-        let dt = new Date();
-        let month = dt.getMonth() + 1;
-        let year = dt.getYear() - 100;
-        let response = await optimizeImage(this.select.code, this.select.image);
-        let imagePath = `${year}/${month}/${dt.getTime()}-${product.uid}`;
-        await storage.child(imagePath).put(response);
-        product.images.push(imagePath);
+        data.append("image", this.select.image);
       }
-      await Product.create(product, {
-        categories: this.categories,
-        colors: this.colors,
+
+      for (let [key, value] of Object.entries(product)) {
+        data.append(key, value);
+      }
+
+      this.axios({
+        data,
+        method: "POST",
+        url: server.products,
+        headers: {
+          Accept: "application/json",
+          "Content-Type": `multipart/form-data; boundary=${data._boundary}`,
+          "X-Access-Token": this.$root.user.token,
+        },
+      }).then(() => {
+        this.$router.push({ path: "/products" });
       });
-      this.$router.push({ path: "/products" });
-      this.loading = false;
     },
 
     goToRequiredField() {
@@ -132,30 +112,15 @@ export default {
     },
   },
 
-  async beforeMount() {
-    let colors = await colorsRef.get();
-    let categories = await categoriesRef.get();
-
-    if (colors.exists()) {
-      colors = colors.val();
-      Object.entries(colors).forEach(([key, value]) => {
-        this.colors.push({
-          id: key,
-          title: value.title,
-        });
+  beforeMount() {
+    this.axios
+      .get(server.combo, {
+        headers: { "X-Access-Token": this.$root.user.token },
+      })
+      .then(({ data }) => {
+        this.categories = data.categories;
+        this.colors = data.colors;
       });
-    }
-
-    if (categories.exists()) {
-      categories = categories.val();
-      Object.entries(categories).forEach(([key, value]) => {
-        this.categories.push({
-          id: key,
-          title: value.title,
-          total: value.total,
-        });
-      });
-    }
   },
 };
 </script>
@@ -166,15 +131,12 @@ export default {
       <v-progress-circular indeterminate size="64" />
     </v-overlay>
 
-    <v-form ref="form" @submit.prevent="onSubmit($event)">
+    <v-form ref="form" @submit.prevent="onSubmit">
       <v-row>
         <v-col cols="12">
-          <h2>
-            <v-btn icon @click="$router.back()">
-              <v-icon>mdi-arrow-left</v-icon>
-            </v-btn>
-            ကုန်ပစ္စည်းထည့်သွင်းခြင်း
-          </h2>
+          <v-btn icon @click="$router.back()">
+            <v-icon>mdi-arrow-left</v-icon>
+          </v-btn>
         </v-col>
         <!-- Product Name -->
         <v-col cols="12">
@@ -185,7 +147,7 @@ export default {
             id="input-name"
           >
             <template v-slot:label>
-              <div>ကုန်ပစ္စည်းအမည် <b>*</b></div>
+              <div>ကုန်ပစ္စည်းအမည်<b>*</b></div>
             </template>
           </v-text-field>
         </v-col>
@@ -201,7 +163,7 @@ export default {
             counter="13"
           >
             <template v-slot:label>
-              <div>ကုတ်နံပါတ် <b>*</b></div>
+              <div>ကုတ်နံပါတ်<b>*</b></div>
             </template>
           </v-text-field>
         </v-col>
@@ -219,7 +181,7 @@ export default {
             id="input-price"
           >
             <template v-slot:label>
-              <div>ရောင်းစျေး <b>*</b></div>
+              <div>စျေးနှုန်း<b>*</b></div>
             </template>
           </v-text-field>
         </v-col>
@@ -254,6 +216,7 @@ export default {
             multiple
             outlined
             persistent-hint
+            clearable
             small-chips
           />
         </v-col>
