@@ -30,7 +30,7 @@ async function auth(req, res, next) {
 }
 
 class Guard {
-  static allows(...roles) {
+  static firebase(...roles) {
     return auth.bind({ roles });
   }
 }

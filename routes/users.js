@@ -5,7 +5,7 @@ const admin = require("firebase-admin");
 
 const router = Router();
 
-router.get("/", Guard.allows("admin", "moderator"), async (req, res) => {
+router.get("/", Guard.firebase("admin", "moderator"), async (req, res) => {
   try {
     let { users } = await admin.auth().listUsers();
     users = users
@@ -21,11 +21,11 @@ router.get("/", Guard.allows("admin", "moderator"), async (req, res) => {
   }
 });
 
-router.get("/:uid", Guard.allows("admin", "moderator"), async (req, res) => {
+router.get("/:uid", Guard.firebase("admin", "moderator"), async (req, res) => {
   try {
     let { uid } = req.params;
     let user = await admin.auth().getUser(uid);
-    res.json(user);
+    res.json(user.toJSON()).end();
   } catch (e) {
     switch (e.code) {
       case "auth/user-not-found":
@@ -34,14 +34,11 @@ router.get("/:uid", Guard.allows("admin", "moderator"), async (req, res) => {
         console.error(e);
         e.code = e.code || "server/internal-error";
     }
-    res
-      .status(500)
-      .json(e)
-      .end();
+    res.status(500).json(e).end();
   }
 });
 
-router.post("/:uid", Guard.allows("admin"), async (req, res) => {
+router.post("/:uid", Guard.firebase("admin"), async (req, res) => {
   try {
     let { uid } = req.params;
     let { role } = req.body;
@@ -55,10 +52,7 @@ router.post("/:uid", Guard.allows("admin"), async (req, res) => {
         console.error(e);
         e.code = e.code || "server/internal-error";
     }
-    res
-      .status(500)
-      .json(e)
-      .end();
+    res.status(500).json(e).end();
   }
 });
 

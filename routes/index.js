@@ -11,12 +11,14 @@ router.use((req, res, next) => {
   serverInfo.requested++;
   req.accessToken = req.headers["x-access-token"] || null;
   res.setHeader("Cache-Control", "private;max-age=60");
+  console.log(new Date().toISOString(), "[", req.method, "]", req.path);
   next();
 });
 
 router.use("/products", require("./products"));
 router.use("/users", require("./users"));
 router.use("/metadata", require("./metadata"));
+router.use("/session", require("./session"));
 router.use("/webhook", require("./webhook"));
 
 router.all("/status", (req, res) => {

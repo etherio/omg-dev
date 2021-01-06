@@ -18,17 +18,26 @@ class Product {
     maxAge,
   }) {
     this.id = id;
+    this.uid = uid;
     this.code = code;
     this.name = name;
     this.price = parseInt(price);
     this.createdAt = parseInt(createdAt);
-    this.uid = uid;
     this.images = Object.values(images || {});
-    this.colors = colors;
-    this.category = category;
-    this.description = description;
-    this.minAge = minAge && parseFloat(minAge);
-    this.maxAge = maxAge && parseFloat(maxAge);
+    this.colors = Object.values(colors || {});
+    this.category = category || null;
+    this.description = description || null;
+    this.minAge = (minAge && parseFloat(minAge)) || null;
+    this.maxAge = (maxAge && parseFloat(maxAge)) || null;
+  }
+
+  async save(ref) {
+    if (this.id) {
+      ref.update(this);
+    } else {
+      this.createdAt = Date.now();
+      ref.push(this);
+    }
   }
 
   async fetch({ owner, stocks, imageUrl }) {
@@ -83,6 +92,41 @@ class Product {
         if (snapshot.exists()) {
           this.stocks = snapshot.val().count;
         }
+      });
+  }
+
+  val() {
+    return {
+      code: this.code,
+      name: this.name,
+      price: this.price,
+      createdAt: this.createdAt || Date.now(),
+      uid: this.uid,
+      images: this.images,
+      colors: this.colors,
+      category: this.category,
+      minAge: this.minAge,
+      description: this.description,
+      maxAge: this.maxAge,
+    };
+  }
+
+  static async remove(id) {
+    const ref = database().ref(`${databaseName}/products/${id}`);
+    const snapshot = await ref.get();
+
+    if (!snapshot.exists()) {
+      throw new Error();
+    }
+
+    // delete from products
+    await ref.remove();
+
+    // decrement product metadata
+    database()
+      .ref(`${databaseName}/metadata/collection/products`)
+      .update({
+        count: database.ServerValue.increment(-1),
       });
   }
 }
