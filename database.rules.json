@@ -1,0 +1,16 @@
+{
+  "rules": {
+    "$database": {
+      "colors": {
+        ".indexOn": ".value",
+        ".read": "auth.uid != null",
+        ".write": "auth.uid != null"
+      },
+      "categories": {
+        ".indexOn": ".value",
+        ".read": "auth.uid != null",
+        ".write": "auth.uid != null"
+      }
+    }
+  }
+}

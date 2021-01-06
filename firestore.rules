@@ -1,0 +1,44 @@
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // check user is logged in
+    function LoggedIn() {
+      return request.auth != null &&
+      request.auth.uid != null &&
+      request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
+    // check user has role
+    function hasRole() {
+      return request.auth.token != null &&
+      request.auth.token.role != null;
+    }
+
+    // check user is admin
+    function Admin() {
+      return request.auth.token.role == 'admin';
+    }
+
+    // check user is moderator
+    function Moderator() {
+      return request.auth.token.role == 'moderator';
+    }
+
+    // [PUBLIC]
+    match /public/{document} {
+      match /{collection}/{anyPath=**} {
+        allow read: if LoggedIn() && hasRole();
+        allow create, write: if LoggedIn() && hasRole() && (Moderator() || Admin());
+        allow delete: if LoggedIn() && hasRole() && Admin();
+      }
+    }
+
+    // [Deprecated] backward compatibility...
+    match /databases/{document=**} {
+
+        allow read: if LoggedIn() && hasRole();
+        allow write: if LoggedIn() && hasRole() && (Moderator() || Admin());
+ 
+    }
+  }
+}
