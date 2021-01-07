@@ -1,35 +1,24 @@
 const { Router } = require("express");
 const router = Router();
+const Guard = require("../src/guard");
 
 const userSessions = {};
 
-router.post("/", (req, res) => {
-  let { user, credential, additionalUserInfo } = req.body;
-  if (!credential || !additionalUserInfo) {
+router.post("/", Guard.firebase("admin", "moderator"), (req, res) => {
+  let { access_token, granted_scopes } = req.body;
+  if (!access_token || !granted_scopes) {
     return res.status(400).end();
   }
-  let uid = user.uid;
-  if (credential.providerId === "facebook.com") {
-    let id = additionalUserInfo.id;
-    let scope = additionalUserInfo.granted_scopes;
-    let token = credential.oauthAccessToken;
-    let iss = Date.now();
-    let exp = iss + 6000;
-    userSessions[uid] = { id, scope, token, iss, exp };
-  }
+  let uid = req.auth.uid;
+  userSessions[uid] = { access_token, granted_scopes, issued: Date.now() };
   res.status(201).end();
 });
 
 router.get("/:uid", (req, res) => {
   const { uid } = req.params;
-  if (!uid) return res.status(400).end();
   const session = userSessions[uid];
-  if (!session) return res.json({ status: "null" }).end();
-  console.log(session);
-  if (session.exp < Date.now()) {
-    return res.json({ status: "expired" }).end();
-  }
-  return res.json({ status: "session", session }).end();
+  if (!session) return res.json({ access_token: null }).end();
+  return res.json(session).end();
 });
 
 module.exports = router;

@@ -56,4 +56,21 @@ router.post("/:uid", Guard.firebase("admin"), async (req, res) => {
   }
 });
 
+router.delete("/:uid", Guard.firebase("admin"), async (req, res) => {
+  try {
+    let { uid } = req.params;
+    await admin.auth().deleteUser(uid);
+    res.status(202).end();
+  } catch (e) {
+    switch (e.code) {
+      case "auth/user-not-found":
+        break;
+      default:
+        console.error(e);
+        e.code = e.code || "server/internal-error";
+    }
+    res.status(500).json(e).end();
+  }
+});
+
 module.exports = router;
