@@ -7,6 +7,7 @@ export default class User {
       user = user.toJSON();
       user.token = token;
       user.role = claims.role;
+      user.access_token = claims.access_token;
       return user;
     });
   }

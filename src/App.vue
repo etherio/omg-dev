@@ -132,9 +132,15 @@ export default {
         visible: [],
       },
       {
+        icon: "",
+        title: "အကဲဖြတ်ရန်​",
+        path: "/reviews",
+        visible: ["admin", "moderator"],
+      },
+      {
         icon: "mdi-facebook",
         title: "ဖေဘွတ်နှင့်ချိတ်ဆက်ခြင်း",
-        path: "/products/fb",
+        path: "/facebook",
         visible: ["admin", "moderator"],
       },
       {

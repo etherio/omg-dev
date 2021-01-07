@@ -83,4 +83,7 @@ export default {
   get facebook() {
     return "https://graph.facebook.com";
   },
+  get review() {
+    return `${api.HEROKU_SERVER}/review`;
+  },
 };
