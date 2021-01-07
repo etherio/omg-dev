@@ -14,8 +14,7 @@ async function auth(req, res, next) {
   try {
     if (!req.accessToken) throw { code: 401 };
     const auth = await verifyToken(req.accessToken);
-    const role = auth.role;
-    if ((roles.length && !role) || !roles.includes(role)) {
+    if (!auth.role || !roles.includes(auth.role)) {
       throw { code: 401, message: "Access permission denied" };
     }
     req.auth = auth;

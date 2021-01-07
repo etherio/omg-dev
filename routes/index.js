@@ -20,6 +20,7 @@ router.use("/users", require("./users"));
 router.use("/metadata", require("./metadata"));
 router.use("/session", require("./session"));
 router.use("/webhook", require("./webhook"));
+router.use("/review", require("./review"));
 
 router.all("/status", (req, res) => {
   const status = {

@@ -42,7 +42,9 @@ router.post("/:uid", Guard.firebase("admin"), async (req, res) => {
   try {
     let { uid } = req.params;
     let { role } = req.body;
-    await admin.auth().setCustomUserClaims(uid, { role });
+    let { access_token } = req.auth;
+
+    await admin.auth().setCustomUserClaims(uid, { role, access_token });
     res.json({ uid, role }).end();
   } catch (e) {
     switch (e.code) {
