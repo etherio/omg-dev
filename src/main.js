@@ -31,7 +31,6 @@ new Vue({
   vuetify,
   render(h) {
     firebase.auth().onAuthStateChanged((user) => {
-      console.log(user.toJSON());
       if (!user && this.$route.path !== "/login") {
         this.$router.push({ path: "/login" }).then(() => {
           this.loaded = true;
