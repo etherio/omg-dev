@@ -105,8 +105,8 @@ export default {
       firebase
         .auth()
         .signInWithEmailAndPassword(this.email, this.password)
-        .then(() => {
-          this.loading = false;
+        .then((user) => {
+          this.$router.go("/");
         })
         .catch((err) => {
           this.loading = false;
@@ -135,10 +135,8 @@ export default {
       firebase.auth().signInWithRedirect(provider);
     },
   },
-  beforeMount() {
-    if (this.$root.user) {
-      this.$router.push({ path: "/" });
-    }
+  beforeCreate() {
+    firebase.auth().currentUser && this.$router.push("/");
   },
 };
 </script>

@@ -80,4 +80,7 @@ export default {
   get combo() {
     return `${api.HEROKU_SERVER}/metadata/combo`;
   },
+  get facebook() {
+    return "https://graph.facebook.com";
+  },
 };

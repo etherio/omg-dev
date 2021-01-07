@@ -1,50 +1,3 @@
-<script>
-import { translateNumber } from "../app/burmese";
-import AddCategory from "../components/AddCategory.vue";
-import { database, ServerValue } from "../firebase";
-
-const zero = "၀";
-const dbRef = database.child("categories");
-
-const wrapper = (id, title, total) => ({ id, title, total });
-
-export default {
-  data: () => ({
-    loading: true,
-    empty: false,
-    categories: [],
-  }),
-  components: {
-    AddCategory,
-  },
-  methods: {
-    num(value) {
-      return translateNumber(parseInt(value) || 0);
-    },
-    async deleteCategory(cat) {
-      const metadata = database.child("metadata/collection/categories");
-      await dbRef.child(cat.id).remove();
-      await metadata.update({
-        count: ServerValue.increment(-1),
-      });
-      this.categories = this.categories.filter((c) => c.id !== cat.id);
-    },
-  },
-  async beforeMount() {
-    const ref = await dbRef.get();
-    if (ref.exists()) {
-      const data = ref.val();
-      Object.entries(data).forEach(([key, value]) =>
-        this.categories.push(wrapper(key, value.title, value.total))
-      );
-    } else {
-      this.empty = true;
-    }
-    this.loading = false;
-  },
-};
-</script>
-
 <template>
   <v-container class="mt-2">
     <h2 class="mb-3">ကုန်ပစ္စည်းအမျိုးအစားများ</h2>
@@ -106,3 +59,31 @@ export default {
     </v-card>
   </v-container>
 </template>
+
+<script>
+import { translateNumber } from "../app/burmese";
+import AddCategory from "@/components/AddCategory.vue";
+
+const zero = "၀";
+
+const wrapper = (id, title, total) => ({ id, title, total });
+
+export default {
+  data: () => ({
+    loading: true,
+    empty: false,
+    categories: [],
+  }),
+  components: {
+    AddCategory,
+  },
+  methods: {
+    num(value) {
+      return translateNumber(parseInt(value) || 0);
+    },
+  },
+  beforeMount() {
+    //
+  },
+};
+</script>

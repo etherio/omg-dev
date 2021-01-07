@@ -2,6 +2,11 @@ const api = {
   HEROKU_SERVER: "https://afternoon-lake-52643.herokuapp.com",
 };
 
+const facebook = {
+  page_id: "omg.babystore.online",
+  client_id: 1240461186326353,
+};
+
 const firebaseConfig = {
   apiKey: "AIzaSyBiSkxX_gfnqyhPath2vFwn2gjLclrFCtI",
   authDomain: "etherio-vue.firebaseapp.com",
@@ -15,5 +20,6 @@ const firebaseConfig = {
 
 module.exports = {
   api,
+  facebook,
   firebaseConfig,
 };

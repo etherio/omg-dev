@@ -5,19 +5,18 @@ import vuetify from "./plugins/vuetify";
 import axios from "axios";
 import VueAxios from "vue-axios";
 import User from "./app/User";
-import { app, auth } from "./firebase";
 import server from "./app/server";
-
-const data = {
-  loaded: false,
-  user: null,
-  overlay: () => null,
-};
+import { firebaseConfig } from "../config";
+import firebase from "firebase/app";
+import "firebase/auth";
 
 Vue.use(VueAxios, axios);
+
 Vue.config.productionTip = true;
 
-auth()
+firebase.initializeApp(firebaseConfig);
+firebase
+  .auth()
   .getRedirectResult()
   .then((result) => {
     if (result && result.credential) {
@@ -27,18 +26,21 @@ auth()
   });
 
 new Vue({
-  data,
+  data: { loaded: false, user: null, overlay: () => null },
   router,
   vuetify,
   render(h) {
-    auth().onAuthStateChanged((user) => {
-      User.resolve(user).then(async (user) => {
-        data.user = user;
-        data.loaded = true;
-        if (!user && this.$route.path !== "/login") {
-          this.$router.push({ path: "/login" });
-        }
-      });
+    firebase.auth().onAuthStateChanged((user) => {
+      if (!user && this.$route.path !== "/login") {
+        this.$router.push({ path: "/login" }).then(() => {
+          this.loaded = true;
+        });
+      } else {
+        User.resolve(user).then(async (user) => {
+          this.user = user;
+          this.loaded = true;
+        });
+      }
     });
 
     return h(App);

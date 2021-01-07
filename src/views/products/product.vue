@@ -1,10 +1,101 @@
+<template>
+  <v-container>
+    <v-card :loading="loading">
+      <v-card-title>
+        <v-btn icon class="mr-2" @click="$router.back()">
+          <v-icon>mdi-arrow-left</v-icon>
+        </v-btn>
+        <span v-if="name">
+          {{ name }}
+          <v-chip v-if="code" color="secondary" class="mx-1" small>
+            {{ code }}
+          </v-chip>
+        </span>
+      </v-card-title>
+      <v-card-text>
+        <v-row>
+          <v-col cols="12" sm="5">
+            <a :href="photoURL" target="_blank" download>
+              <v-img :src="photoURL" :lazy-src="placeholder" alt="image">
+                <template v-slot:placeholder>
+                  <v-row
+                    class="fill-height ma-0"
+                    align="center"
+                    justify="center"
+                  >
+                    <v-progress-circular indeterminate color="grey lighten-5" />
+                  </v-row>
+                </template>
+              </v-img>
+            </a>
+          </v-col>
+          <v-col cols="12" sm="7" v-if="price">
+            <v-card-subtitle id="price" class="font-weight-bold">
+              {{ priceInBurmese }}
+            </v-card-subtitle>
+            <p>
+              <span v-if="owner">
+                <a href="#">{{ ownerName }}</a> မှ
+              </span>
+              <a href="#">{{ createdDateTime }}</a> တွင် တင်ခဲ့သည်။
+            </p>
+
+            <v-chip v-if="category" color="primary" class="mx-1" small>
+              {{ category }}
+            </v-chip>
+            <v-chip
+              v-if="minAge"
+              id="min-age"
+              class="mx-1"
+              small
+              color="indigo lighten-1"
+              dark
+            >
+              {{ minAgeInBurmese }}
+            </v-chip>
+            <v-chip
+              v-if="maxAge"
+              id="max-age"
+              class="mx-1"
+              small
+              color="indigo lighten-1"
+              dark
+            >
+              {{ maxAgeInBurmese }}
+            </v-chip>
+            <v-card-subtitle v-if="description">
+              {{ description }}
+            </v-card-subtitle>
+          </v-col>
+        </v-row>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <delete-product-modal
+          :deleteProduct="deleteProduct"
+          :loading="loading"
+        />
+        <v-btn
+          text
+          color="primary darken-2"
+          :to="`/products/${$route.params.id}/clone`"
+        >
+          <v-icon class="mr-1">mdi-content-copy</v-icon>
+          ပွားရန်
+        </v-btn>
+        <!-- <v-btn text :to="`/${$route.params.id}/edit`">
+          <v-icon class="mr-1">mdi-pencil</v-icon>
+          ပြင်ရန်
+        </v-btn> -->
+      </v-card-actions>
+    </v-card>
+  </v-container>
+</template>
+
 <script>
-import axios from "axios";
 import server from "@/app/server";
-import Product from "@/app/Product";
 import placeholder from "@/assets/img/image-dark.png";
 import placeholderLight from "@/assets/img/image.png";
-import { database, databaseName, ServerValue, storage } from "@/firebase";
 import {
   translateAge,
   translateDateTime,
@@ -96,101 +187,6 @@ export default {
   },
 };
 </script>
-
-<template>
-  <v-container>
-    <v-card :loading="loading">
-      <v-card-title>
-        <v-btn icon class="mr-2" @click="$router.back()">
-          <v-icon>mdi-arrow-left</v-icon>
-        </v-btn>
-        <span v-if="name">
-          {{ name }}
-          <v-chip v-if="code" color="secondary" class="mx-1" small>
-            {{ code }}
-          </v-chip>
-        </span>
-      </v-card-title>
-      <v-card-text>
-        <v-row>
-          <v-col cols="12" sm="5">
-            <v-img :src="photoURL" :lazy-src="placeholder" alt="image">
-              <template v-slot:placeholder>
-                <v-row class="fill-height ma-0" align="center" justify="center">
-                  <v-progress-circular
-                    indeterminate
-                    color="grey lighten-5"
-                  ></v-progress-circular>
-                </v-row>
-              </template>
-            </v-img>
-          </v-col>
-          <v-col cols="12" sm="7" v-if="price">
-            <v-card-subtitle id="price" class="font-weight-bold">
-              {{ priceInBurmese }}
-            </v-card-subtitle>
-            <p>
-              <span v-if="owner">
-                <a href="#">{{ ownerName }}</a> မှ
-              </span>
-              <a href="#">{{ createdDateTime }}</a> တွင် တင်ခဲ့သည်။
-            </p>
-
-            <v-chip v-if="category" color="primary" class="mx-1" small>
-              {{ category }}
-            </v-chip>
-            <v-chip
-              v-if="minAge"
-              id="min-age"
-              class="mx-1"
-              small
-              color="indigo lighten-1"
-              dark
-            >
-              {{ minAgeInBurmese }}
-            </v-chip>
-            <v-chip
-              v-if="maxAge"
-              id="max-age"
-              class="mx-1"
-              small
-              color="indigo lighten-1"
-              dark
-            >
-              {{ maxAgeInBurmese }}
-            </v-chip>
-            <v-card-subtitle v-if="description">
-              {{ description }}
-            </v-card-subtitle>
-          </v-col>
-        </v-row>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <delete-product-modal
-          :deleteProduct="deleteProduct"
-          :loading="loading"
-        />
-        <v-btn text color="primary darken-2" :href="photoURL" target="_blank">
-          <v-icon class="mr-1">mdi-download</v-icon>
-          ပုံယူရန်
-        </v-btn>
-        <v-btn
-          text
-          color="primary darken-2"
-          :to="`/products/${$route.params.id}/clone`"
-        >
-          <v-icon class="mr-1">mdi-content-copy</v-icon>
-          ပွားရန်
-        </v-btn>
-        <!-- <v-btn text :to="`/${$route.params.id}/edit`">
-          <v-icon class="mr-1">mdi-pencil</v-icon>
-          ပြင်ရန်
-        </v-btn> -->
-      </v-card-actions>
-    </v-card>
-  </v-container>
-</template>
 
 <style scoped>
 #price {

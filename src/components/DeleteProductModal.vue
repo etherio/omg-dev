@@ -1,6 +1,4 @@
 <script>
-import { database, storage, ServerValue } from "../firebase";
-
 export default {
   name: "delete-product-modal",
   props: {

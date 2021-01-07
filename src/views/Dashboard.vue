@@ -1,39 +1,3 @@
-<script>
-import { database } from "../firebase";
-import { translateNumber } from "../app/burmese";
-import server from "../app/server";
-
-export default {
-  data: () => ({
-    products: 0,
-    categories: 0,
-    inventory: 0,
-  }),
-
-  methods: {
-    num: translateNumber,
-  },
-
-  async beforeMount() {
-    this.products = 0;
-    this.categories = 0;
-    this.inventory = 0;
-    try {
-      const { data } = await this.axios.get(server.metadata, {
-        headers: {
-          'X-Access-Token': this.$root.user.token
-        },
-      });
-      this.products = data.products;
-      this.categories = data.categories;
-      this.inventory = data.inventory;
-    } catch (e) {
-      console.error(e);
-    }
-  },
-};
-</script>
-
 <template>
   <v-container>
     <h2 class="text-center mt-3 mb-3">မင်္ဂလာပါ‌</h2>
@@ -68,3 +32,38 @@ export default {
     </v-row>
   </v-container>
 </template>
+
+<script>
+import { translateNumber } from "../app/burmese";
+import server from "../app/server";
+
+export default {
+  data: () => ({
+    products: 0,
+    categories: 0,
+    inventory: 0,
+  }),
+
+  methods: {
+    num: translateNumber,
+  },
+
+  async beforeMount() {
+    this.products = 0;
+    this.categories = 0;
+    this.inventory = 0;
+    try {
+      const { data } = await this.axios.get(server.metadata, {
+        headers: {
+          "X-Access-Token": this.$root.user.token,
+        },
+      });
+      this.products = data.products;
+      this.categories = data.categories;
+      this.inventory = data.inventory;
+    } catch (e) {
+      console.error(e);
+    }
+  },
+};
+</script>

@@ -1,13 +1,8 @@
 <script>
-import server from "../app/server";
-import { database, databaseName, storage, ServerValue } from "../firebase";
-import { translateAge } from "../app/burmese";
+import server from "@/app/server";
+import { translateAge } from "@/app/burmese";
 import axios from "axios";
 import FormData from "form-data";
-import Product from "../app/Product";
-
-const categoriesRef = database.child("categories");
-const colorsRef = database.child("colors");
 
 const optimizeImage = async (code, file) => {
   let data = new FormData();

@@ -28,7 +28,8 @@
       </v-col>
       <v-col cols="12" sm="6">
         <v-btn
-          v-if="!providers.includes('google.com')"
+          v-if="!linked.google"
+          @click="linkWithGoogle"
           class="mt-3 mb-3 font-weight-bold"
           color="red"
           dark
@@ -36,16 +37,39 @@
         >
           <v-icon class="pr-2" small>mdi-google</v-icon> ဖြင့်ချိတ်ဆက်ရန်
         </v-btn>
+        <v-btn
+          v-else
+          @click="unlinkWithFacebook"
+          class="mt-3 mb-3 font-weight-bold"
+          color="secondary"
+          dark
+          text
+        >
+          <v-icon small class="pr-2">mdi-google</v-icon>
+          ဖြင့်ချိတ်ဆက်မှုဖြုတ်ရန်​
+        </v-btn>
       </v-col>
       <v-col cols="12" sm="6">
         <v-btn
-          v-if="!providers.includes('facebook.com')"
+          v-if="!linked.facebook"
+          @click="linkWithFacebook"
           class="mt-3 mb-3 font-weight-bold"
           color="blue darken-2"
           dark
           block
         >
           <v-icon small class="pr-2">mdi-facebook</v-icon> ဖြင့်ချိတ်ဆက်ရန်
+        </v-btn>
+        <v-btn
+          v-else
+          @click="unlinkWithFacebook"
+          class="mt-3 mb-3 font-weight-bold"
+          color="secondary"
+          dark
+          text
+        >
+          <v-icon small class="pr-2">mdi-facebook</v-icon>
+          ဖြင့်ချိတ်ဆက်မှုဖြုတ်ရန်​
         </v-btn>
       </v-col>
       <v-col cols="12">
@@ -57,9 +81,9 @@
 </template>
 
 <script>
-import { auth } from "../firebase";
 import DeleteProfileModal from "../components/DeleteProfileModal.vue";
 import placeholder from "../assets/img/image.png";
+import firebase from "firebase/app";
 
 export default {
   name: "Profile",
@@ -74,8 +98,49 @@ export default {
     password: null,
     phone: null,
     error: null,
-    providers: [],
+    linked: {
+      password: false,
+      google: false,
+      facebook: false,
+    },
   }),
+
+  methods: {
+    unlinkWithGoogle() {
+      firebase
+        .auth()
+        .currentUser.unlink("google.com")
+        .then(() => {
+          this.linked.google = false;
+        });
+    },
+    unlinkWithFacebook() {
+      firebase
+        .auth()
+        .currentUser.unlink("facebook.com")
+        .then(() => {
+          this.linked.facebook = false;
+        });
+    },
+    linkWithFacebook() {
+      const user = firebase.auth().currentUser;
+      const provider = new firebase.auth.FacebookAuthProvider();
+      provider.addScope("public_profile,email");
+      user
+        .linkWithPopup(provider)
+        .then(({ credential, additionalUserInfo }) => {
+          this.providers.push(credential.providerId);
+          sessionStorage.setItem("fb.credential", JSON.stringify(user));
+        });
+    },
+    linkWithGoogle() {
+      const user = firebase.auth().currentUser;
+      const provider = new firebase.auth.GoogleAuthProvider();
+      user.linkWithPopup(provider).then(({ credential }) => {
+        this.providers.push(credential.providerId);
+      });
+    },
+  },
 
   computed: {
     createdAt() {
@@ -97,7 +162,19 @@ export default {
     this.email = user.email || " ";
     this.phone = user.phoneNumber || " ";
     this.avatar = user.photoURL || placeholder;
-    this.providers = user.providerData.map((provider) => provider.providerId);
+    user.providerData.forEach((provider) => {
+      switch (provider.providerId) {
+        case "facebook.com":
+          this.linked.facebook = true;
+          break;
+        case "google.com":
+          this.linked.google = true;
+          break;
+        case "password":
+          this.linked.password = true;
+          break;
+      }
+    });
   },
 };
 </script>

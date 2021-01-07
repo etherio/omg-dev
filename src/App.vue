@@ -3,6 +3,30 @@
     <v-overlay :value="overlay" />
 
     <v-navigation-drawer v-model="drawer" fixed temporary v-if="$root.user">
+      <template v-slot:prepend>
+        <router-link :to="{ path: '/profile' }">
+          <v-list-item two-line>
+            <v-list-item-avatar>
+              <img v-if="$root.user.photoURL" :src="$root.user.photoURL" />
+              <v-icon v-else large>mdi-account</v-icon>
+            </v-list-item-avatar>
+
+            <v-list-item-content>
+              <v-list-item-title>
+                {{ displayName }}
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                <v-btn text small color="red" dark :to="{ path: '/logout' }">
+                  အကောင့်မှထွက်ရန်
+                </v-btn>
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </router-link>
+      </template>
+
+      <v-divider></v-divider>
+
       <v-list nav dense>
         <v-list-item-group
           v-model="group"
@@ -21,9 +45,22 @@
     </v-navigation-drawer>
 
     <v-app-bar app color="primary" dark v-if="$root.user">
-      <nav-bar>
-        <v-app-bar-nav-icon @click="drawer = true" />
-      </nav-bar>
+      <v-app-bar-nav-icon @click="drawer = true" />
+      <v-toolbar-title>
+        <router-link :to="{ path: '/' }">
+          <v-img
+            id="logo"
+            alt="OMG"
+            class="shrink mr-2"
+            contain
+            :src="logo"
+            :lazy-src="logo"
+            transition="scale-transition"
+            width="80"
+          />
+        </router-link>
+      </v-toolbar-title>
+      <v-spacer></v-spacer>
     </v-app-bar>
 
     <!-- contents -->
@@ -53,15 +90,14 @@
 
 <script>
 import AccessDenied from "./components/AccessDenied.vue";
-import NavBar from "./components/NavBar.vue";
-import LoginPage from "./components/LoginPage.vue";
 import { translateNumber } from "./app/burmese";
-import { auth } from "./firebase";
+import logo from "./assets/img/logo.png";
 
 export default {
   name: "App",
 
   data: () => ({
+    logo,
     overlay: false,
     drawer: false,
     group: null,
@@ -96,6 +132,12 @@ export default {
         visible: [],
       },
       {
+        icon: "mdi-facebook",
+        title: "ဖေဘွတ်နှင့်ချိတ်ဆက်ခြင်း",
+        path: "/products/fb",
+        visible: ["admin", "moderator"],
+      },
+      {
         icon: "mdi-security",
         title: "ခွင့်ပြုချက်များ",
         path: "/users",
@@ -111,7 +153,6 @@ export default {
   }),
 
   components: {
-    NavBar,
     AccessDenied,
   },
 
@@ -128,12 +169,13 @@ export default {
     this.$root.overlay = (value) => {
       this.overlay = value;
     };
+  },
 
-    auth()
-      .getRedirectResult()
-      .then((data) => {
-        if (!data) return;
-      });
+  computed: {
+    displayName() {
+      const user = this.$root.user;
+      return user.displayName || user.email || user.phoneNumber;
+    },
   },
 };
 </script>

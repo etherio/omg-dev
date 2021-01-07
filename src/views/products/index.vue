@@ -1,6 +1,5 @@
 <script>
 import server from "@/app/server";
-import { databaseName, database, storage } from "@/firebase";
 import { translateNumber, translateAge } from "@/app/burmese";
 import placeholder from "@/assets/img/image.png";
 
